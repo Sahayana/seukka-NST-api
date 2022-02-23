@@ -1,6 +1,7 @@
 
 import boto3
 import tensorflow_hub as hub
+import flask
 
 class NstappConfig:
     default_auto_field = 'django.db.models.BigAutoField'
