@@ -29,28 +29,26 @@ def upload_tesor_img(bucket, tensor, key):
     buffer.seek(0)
     NstappConfig.s3.put_object(Bucket=bucket, Key=key, Body=buffer, ACL='public-read')
     location = NstappConfig.s3.get_bucket_location(Bucket=bucket)['LocationConstraint']
-    url = "https://s3-%s.amazonaws.com/%s/%s" % (location, bucket, key)
+    url = "https://%s.s3-%s.amazonaws.com/%s" % (bucket,location, key)
     return url
 
-def nst_apply(key: str, img) -> str:
+def nst_apply(key: str, img, style) -> str:
+    key = key +'.png'
 
-    # 원하는
-    style_path = tf.keras.utils.get_file('kkm.jpg',
-                                        'https://tekken.s3.ap-northeast-2.amazonaws.com/kkm.jpg')
-    style_path_2 = tf.keras.utils.get_file('border.jpg',
-                                        'https://tekken.s3.ap-northeast-2.amazonaws.com/border.jpg')
+    style_path = tf.keras.utils.get_file(f'{style}.jpg',
+                                        f'https://tekken.s3.ap-northeast-2.amazonaws.com/{style}.jpg')
     style_image_first = load_style(style_path, 128)
-    style_image_second = load_style(style_path_2, 512)
+    style_image_second = load_style(style_path, 512)
     style_image_third = load_style(style_path, 512)
     style_image_fourth = load_style(style_path, 1024)
     # style_image_2 = load_style(style_path_2, 256)
-    img = Image.open(img.file).convert('RGB')
+    img = Image.open(img).convert('RGB')
     content_image = tf.keras.preprocessing.image.img_to_array(img)
     content_image = content_image.astype(np.float32)[np.newaxis, ...] / 255
-    content_image = tf.image.resize(content_image, (256,512))
+    content_image = tf.image.resize(content_image, (256,256))
 
     
-
+    
 
     stylized_img = NstappConfig.hub_module(tf.constant(content_image), tf.constant(style_image_second))[0]
 
