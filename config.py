@@ -3,6 +3,8 @@ import tensorflow_hub as hub
 import os
 import json
 
+
+# AWS 보안정보를 따로 관리하기위함 json파일을 불러와서 읽어줌
 with open('config.json') as f:
     aws = json.loads(f.read())
 
